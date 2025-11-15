@@ -1,0 +1,79 @@
+@page "/myorders/{OrderId:int}"
+@inject HttpClient Http
+@inject NavigationManager NavManager
+@inject IJSRuntime JS
+
+<h2>Order detail</h2>
+
+<a class="back-link" href="/myorders">
+    <span class="arrow">←</span>
+    <span>Back to orders</span>
+</a>
+
+@if (invalidOrder)
+{
+    <h3>Order not found</h3>
+    <p>We're sorry but this order no longer exists.</p>
+}
+else if (orderWithStatus == null)
+{
+    <p>Loading...</p>
+}
+else
+{
+    <div class="card">
+        <h4>Order placed @orderWithStatus.Order.CreatedTime.ToLongDateString()</h4>
+        <p>Status: <strong>@orderWithStatus.StatusText</strong></p>
+
+        <div>
+            @foreach (var pizza in orderWithStatus.Order.Pizzas)
+            {
+                <p><strong>@(pizza.Size)"" @pizza.Special?.Name (£@pizza.GetFormattedTotalPrice())</strong></p>
+            }
+        </div>
+
+        <div style="margin-top:12px; display:flex; gap:8px;">
+            <button class="btn btn-danger" @onclick="DeleteOrder">Delete order</button>
+            <button class="btn small-action" @onclick='() => NavManager.NavigateTo("/")'>Home</button>
+
+        </div>
+    </div>
+}
+
+@code {
+    [Parameter]
+    public int OrderId { get; set; }
+
+    OrderWithStatus? orderWithStatus;
+    bool invalidOrder = false;
+
+    protected override async Task OnParametersSetAsync()
+    {
+        try
+        {
+            orderWithStatus = await Http.GetFromJsonAsync<OrderWithStatus>($"api/orders/{OrderId}");
+            if (orderWithStatus == null) invalidOrder = true;
+        }
+        catch
+        {
+            invalidOrder = true;
+        }
+    }
+
+    async Task DeleteOrder()
+    {
+        var ok = await JS.InvokeAsync<bool>("confirm", $"Delete order {OrderId}? This cannot be undone.");
+        if (!ok) return;
+
+        var resp = await Http.DeleteAsync($"api/orders/{OrderId}");
+        if (resp.IsSuccessStatusCode)
+        {
+            NavManager.NavigateTo("/myorders");
+        }
+        else
+        {
+            var msg = await resp.Content.ReadAsStringAsync();
+            await JS.InvokeVoidAsync("alert", $"Delete failed: {resp.StatusCode}\n{msg}");
+        }
+    }
+}

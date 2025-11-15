@@ -1,0 +1,41 @@
+﻿@inherits LayoutComponentBase
+@using Microsoft.AspNetCore.Components.Routing
+
+<div id="app">
+  <header class="top-bar">
+    <div class="top-bar-inner">
+      <a class="logo" href="/">
+        <div class="logo-badge">🍕</div>
+        <div class="brand">
+          <div class="brand-name">Blazing Pizza</div>
+          <div class="brand-sub">Hot & Fast</div>
+        </div>
+      </a>
+
+      <nav class="top-nav">
+        <NavLink href="/" class="nav-tab" Match="NavLinkMatch.All">
+          <div class="nav-icon">🍕</div>
+          <div class="nav-label">Get Pizza</div>
+        </NavLink>
+
+        <NavLink href="/myorders" class="nav-tab">
+          <div class="nav-icon">🚴</div>
+          <div class="nav-label">My Orders</div>
+        </NavLink>
+
+        <NavLink href="/checkout" class="nav-tab">
+          <div class="nav-icon">🧾</div>
+          <div class="nav-label">Checkout</div>
+        </NavLink>
+      </nav>
+    </div>
+  </header>
+
+  <main class="content container">
+    @Body
+  </main>
+
+  <footer class="site-footer">
+    <div>© Blazing Pizza @DateTime.UtcNow.Year</div>
+  </footer>
+</div>

@@ -1,0 +1,42 @@
+@page "/pizzas"
+@inject HttpClient Http
+@inject Services.OrderState OrderState
+
+<h2>Get Pizza</h2>
+
+@if (specials == null)
+{
+    <p>Loading pizza specials...</p>
+}
+else
+{
+    <div class="row">
+        @foreach (var s in specials)
+        {
+            <div class="col-md-4 mb-3">
+                <div class="card">
+                    <div class="card-body">
+                        <h5>@s.Name</h5>
+                        <p>Price: £@s.Price</p>
+                        <button class="btn btn-primary" @onclick="() => AddSpecialToOrder(s)">Add to order</button>
+                    </div>
+                </div>
+            </div>
+        }
+    </div>
+}
+
+@code {
+    List<PizzaSpecial>? specials;
+
+    protected override async Task OnInitializedAsync()
+    {
+        specials = await Http.GetFromJsonAsync<List<PizzaSpecial>>("api/pizzas");
+    }
+
+    void AddSpecialToOrder(PizzaSpecial s)
+    {
+        var pizza = new Pizza { SpecialId = s.Id, Special = s, Size = 12 };
+        OrderState.AddPizza(pizza);
+    }
+}

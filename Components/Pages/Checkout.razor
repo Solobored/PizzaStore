@@ -1,0 +1,70 @@
+@page "/checkout"
+@inject PizzaStore.Services.OrderState OrderState
+@inject HttpClient Http
+@inject NavigationManager NavManager
+
+<h2>Checkout</h2>
+
+<a class="back-link" href="/pizzas">
+    <span class="arrow">←</span>
+    <span>Back to menu</span>
+</a>
+
+@if (OrderState.Order == null || !OrderState.Order.Pizzas.Any())
+{
+    <div class="card">
+        <p>No items in order. <NavLink href="/pizzas">Order some pizza</NavLink></p>
+    </div>
+}
+else
+{
+    <div class="card checkout-card">
+        <h4>Review order</h4>
+
+        @for (int i = 0; i < OrderState.Order.Pizzas.Count; i++)
+        {
+            var pizza = OrderState.Order.Pizzas[i];
+            <div class="list-group-item">
+                <div>
+                    <div class="pizza-title">@pizza.Special?.Name</div>
+                    <div class="pizza-price">@(pizza.Size)"" • £@pizza.GetFormattedTotalPrice()</div>
+                </div>
+                <div style="display:flex; gap:8px; align-items:center;">
+                    <button class="btn btn-danger" @onclick="() => RemovePizza(i)">Remove</button>
+                </div>
+            </div>
+        }
+
+        <p style="margin-top:12px"><strong>Total: £@OrderState.Order.GetTotalPriceString()</strong></p>
+
+        <div style="display:flex; gap:8px; margin-top:8px;">
+            <button class="btn btn-warning" @onclick="PlaceOrder" disabled="@isSubmitting || !OrderState.HasItems">
+                @if (isSubmitting) { <span>Placing order...</span> } else { <span>Place order</span> }
+            </button>
+
+            <button class="btn small-action" @onclick='() => NavManager.NavigateTo("/")'>Continue Shopping</button>
+        </div>
+    </div>
+}
+
+@code {
+    bool isSubmitting = false;
+
+    void RemovePizza(int index)
+    {
+        OrderState.RemovePizzaAt(index);
+        StateHasChanged();
+    }
+
+    async Task PlaceOrder()
+    {
+        if (OrderState.Order == null || !OrderState.Order.Pizzas.Any()) return;
+
+        isSubmitting = true;
+        var response = await Http.PostAsJsonAsync("api/orders", OrderState.Order);
+        response.EnsureSuccessStatusCode();
+        var newOrderId = await response.Content.ReadFromJsonAsync<int>();
+        OrderState.ResetOrder();
+        NavManager.NavigateTo($"/myorders/{newOrderId}");
+    }
+}
