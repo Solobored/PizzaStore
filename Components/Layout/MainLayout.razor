@@ -1,5 +1,8 @@
 ﻿@inherits LayoutComponentBase
 @using Microsoft.AspNetCore.Components.Routing
+@using Microsoft.AspNetCore.Components
+@using PizzaStore.Services
+@inject OrderState OrderState
 
 <div id="app">
   <header class="top-bar">
@@ -23,9 +26,15 @@
           <span class="nav-label">My Orders</span>
         </NavLink>
 
-        <NavLink href="/checkout" class="nav-tab" Match="NavLinkMatch.Prefix">
-          <span class="nav-icon">🧾</span>
-          <span class="nav-label">Checkout</span>
+        <NavLink href="/checkout" Match="NavLinkMatch.Prefix">
+          <span class="nav-tab cart-nav @(OrderState.HasItems ? "has-items" : "")">
+            <span class="nav-icon">🧾</span>
+            <span class="nav-label">Checkout</span>
+            @if (OrderState.HasItems)
+            {
+              <span class="cart-badge">@(OrderState.Order?.Pizzas?.Count ?? 0)</span>
+            }
+          </span>
         </NavLink>
       </nav>
     </div>
@@ -36,6 +45,26 @@
   </main>
 
   <footer class="site-footer">
-    <div>© Blazing Pizza @DateTime.UtcNow.Year</div>
+    <div class="footer-content">
+      <div class="footer-section">
+        <h4>Blazing Pizza 🍕</h4>
+        <p>Hot & Fast Pizza Delivery</p>
+      </div>
+      <div class="footer-section">
+        <h4>📍 Location</h4>
+        <p>123 Pizza Street<br />New York, NY 10001</p>
+      </div>
+      <div class="footer-section">
+        <h4>📞 Contact</h4>
+        <p>Phone: (555) 123-4567<br />Email: orders@blazingpizza.com</p>
+      </div>
+      <div class="footer-section">
+        <h4>🕐 Hours</h4>
+        <p>Mon-Sun: 11AM - 11PM<br />Delivery: Until 10PM</p>
+      </div>
+    </div>
+    <div class="footer-bottom">
+      <p>© Blazing Pizza @DateTime.UtcNow.Year • Fastest Pizza in Town</p>
+    </div>
   </footer>
 </div>

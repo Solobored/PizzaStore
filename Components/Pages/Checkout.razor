@@ -4,7 +4,7 @@
 @inject HttpClient Http
 @inject NavigationManager NavManager
 
-<h2>Review Your Order</h2>
+<h2>Complete Your Order</h2>
 
 <a class="back-link" href="/pizzas">
     <span class="arrow">←</span>
@@ -19,69 +19,154 @@
 }
 else
 {
-    <div class="card checkout-card">
-        <h4>Your Pizzas</h4>
+    <div class="checkout-layout">
+        <!-- Order Summary (Left) -->
+        <div class="checkout-section">
+            <div class="card checkout-card">
+                <h3>📦 Your Pizzas</h3>
 
-        @for (int i = 0; i < OrderState.Order.Pizzas.Count; i++)
-        {
-            var pizza = OrderState.Order.Pizzas[i];
-            <div class="checkout-item">
-                <div class="item-details">
-                    <div class="pizza-title">@pizza.Special?.Name</div>
-                    <div class="item-specs">
-                        <span class="spec">📏 @pizza.GetSizeDisplayName()</span>
-                        @if (pizza.Toppings.Any())
-                        {
-                            <span class="spec">🧅 @string.Join(", ", pizza.Toppings.Select(pt => pt.Topping?.Name))</span>
-                        }
+                @for (int i = 0; i < OrderState.Order.Pizzas.Count; i++)
+                {
+                    var pizza = OrderState.Order.Pizzas[i];
+                    <div class="checkout-item">
+                        <div class="item-details">
+                            <div class="pizza-title">@pizza.Special?.Name</div>
+                            <div class="item-specs">
+                                <span class="spec">📏 @pizza.GetSizeDisplayName()</span>
+                                @if (pizza.Toppings.Any())
+                                {
+                                    <span class="spec">🧅 @string.Join(", ", pizza.Toppings.Select(pt => pt.Topping?.Name))</span>
+                                }
+                            </div>
+                            <div class="item-price">£@pizza.GetFormattedTotalPrice()</div>
+                        </div>
+                        <button class="btn btn-danger" @onclick="() => RemovePizza(i)">Remove</button>
                     </div>
-                    <div class="item-price">£@pizza.GetFormattedTotalPrice()</div>
-                </div>
-                <button class="btn btn-danger" @onclick="() => RemovePizza(i)">Remove</button>
-            </div>
-        }
+                }
 
-        <div class="order-summary">
-            <div class="summary-row">
-                <span>Items:</span>
-                <span>@OrderState.Order.Pizzas.Count</span>
-            </div>
-            <div class="summary-row total">
-                <span>Total:</span>
-                <span>£@OrderState.Order.GetTotalPriceString()</span>
+                <div class="order-summary">
+                    <div class="summary-row">
+                        <span>Subtotal:</span>
+                        <span>£@OrderState.Order.GetTotalPriceString()</span>
+                    </div>
+                    <div class="summary-row">
+                        <span>Delivery Fee:</span>
+                        <span>£@OrderState.Order.GetDeliveryFeeString()</span>
+                    </div>
+                    <div class="summary-row total">
+                        <span>Total:</span>
+                        <span>£@OrderState.Order.GetGrandTotalString()</span>
+                    </div>
+                </div>
             </div>
         </div>
 
-        @if (!string.IsNullOrEmpty(errorMessage))
-        {
-            <div
-                style="background:#fee; border:1px solid #fcc; border-radius:8px; padding:12px; margin-bottom:12px; color:#c00;">
-                <strong>Error:</strong> @errorMessage
+        <!-- Delivery Info (Right) -->
+        <div class="checkout-section">
+            <div class="card">
+                <h3>📍 Delivery Information</h3>
+
+                <form @onsubmit="PlaceOrder">
+                    <!-- Customer Info -->
+                    <div class="form-group">
+                        <label for="customerName">Full Name *</label>
+                        <input type="text" id="customerName" class="form-control" @bind="deliveryForm.CustomerName"
+                            required />
+                    </div>
+
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="phoneNumber">Phone Number *</label>
+                            <input type="tel" id="phoneNumber" class="form-control" placeholder="(555) 123-4567"
+                                @bind="deliveryForm.PhoneNumber" required />
+                        </div>
+                        <div class="form-group">
+                            <label for="email">Email</label>
+                            <input type="email" id="email" class="form-control" placeholder="your@email.com"
+                                @bind="deliveryForm.Email" />
+                        </div>
+                    </div>
+
+                    <!-- Address Info -->
+                    <div class="form-group">
+                        <label for="address">Street Address *</label>
+                        <input type="text" id="address" class="form-control" placeholder="123 Main Street"
+                            @bind="deliveryForm.StreetAddress" required />
+                    </div>
+
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="city">City *</label>
+                            <input type="text" id="city" class="form-control" placeholder="New York"
+                                @bind="deliveryForm.City" required />
+                        </div>
+                        <div class="form-group">
+                            <label for="postal">Postal Code *</label>
+                            <input type="text" id="postal" class="form-control" placeholder="10001"
+                                @bind="deliveryForm.PostalCode" required />
+                        </div>
+                    </div>
+
+                    <!-- Special Instructions -->
+                    <div class="form-group">
+                        <label for="instructions">Special Instructions</label>
+                        <textarea id="instructions" class="form-control" rows="3"
+                        placeholder="Any special requests? (e.g., Extra sauce, No onions, etc.)"
+                        @bind="deliveryForm.SpecialInstructions"></textarea>
+                    </div>
+
+                    @if (!string.IsNullOrEmpty(errorMessage))
+                    {
+                        <div class="alert alert-danger">
+                            <strong>Error:</strong> @errorMessage
+                        </div>
+                    }
+
+                    <div class="form-actions">
+                        <button type="submit" class="btn btn-warning"
+                            disabled="@(isSubmitting || !OrderState.HasItems || !IsFormValid())">
+                            @if (isSubmitting)
+                            {
+                                <span>⏳ Processing...</span>
+                            }
+                            else
+                            {
+                                <span>✓ Place Order</span>
+                            }
+                        </button>
+
+                        <button type="button" class="btn small-action" @onclick='() => NavManager.NavigateTo("/pizzas")'
+                            disabled="@isSubmitting">
+                            Continue Shopping
+                        </button>
+                    </div>
+                </form>
+
+                <!-- Delivery Info Box -->
+                <div class="delivery-info-box">
+                    <h4>🚗 Estimated Delivery Time</h4>
+                    <p>30-45 minutes from confirmation</p>
+                    <h4>💳 Payment</h4>
+                    <p>Pay with cash on delivery</p>
+                </div>
             </div>
-        }
-
-        <div style="display:flex; gap:8px; margin-top:16px; flex-wrap: wrap;">
-            <button class="btn btn-warning" @onclick="PlaceOrder" disabled="@(isSubmitting || !OrderState.HasItems)">
-                @if (isSubmitting)
-                {
-                    <span>⏳ Placing order...</span>
-                }
-                else
-                {
-
-                    <span>✓ Place order</span>
-                }
-            </button>
-
-            <button class="btn small-action" @onclick='() => NavManager.NavigateTo("/pizzas")'
-                disabled="@isSubmitting">Continue Shopping</button>
         </div>
     </div>
 }
 
 @code {
+    private DeliveryInfo deliveryForm = new();
     bool isSubmitting = false;
     string errorMessage = "";
+
+    private bool IsFormValid()
+    {
+        return !string.IsNullOrWhiteSpace(deliveryForm.CustomerName) &&
+        !string.IsNullOrWhiteSpace(deliveryForm.PhoneNumber) &&
+        !string.IsNullOrWhiteSpace(deliveryForm.StreetAddress) &&
+        !string.IsNullOrWhiteSpace(deliveryForm.City) &&
+        !string.IsNullOrWhiteSpace(deliveryForm.PostalCode);
+    }
 
     void RemovePizza(int index)
     {
@@ -97,17 +182,21 @@ else
             return;
         }
 
+        if (!IsFormValid())
+        {
+            errorMessage = "Please fill in all required fields";
+            return;
+        }
+
         isSubmitting = true;
         errorMessage = "";
 
         try
         {
-            // Create a copy of the order data to send
-            var orderData = new
-            {
-                OrderState.Order.CreatedTime,
-                Pizzas = OrderState.Order.Pizzas
-            };
+            // Add delivery info and estimated delivery time to order
+            OrderState.Order.DeliveryInfo = deliveryForm;
+            OrderState.Order.Status = OrderStatus.Confirmed;
+            OrderState.Order.EstimatedDeliveryTime = DateTime.Now.AddMinutes(35);
 
             var response = await Http.PostAsJsonAsync("api/orders", OrderState.Order);
 
