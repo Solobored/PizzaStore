@@ -1,53 +1,293 @@
 @page "/pizzas"
+@using PizzaStore.Models
 @inject HttpClient Http
 @inject Services.OrderState OrderState
 @inject NavigationManager NavManager
 
-<h2>Get Pizza</h2>
+<div class="pizzas-header">
+    <div>
+        <h1>🍕 Build Your Perfect Pizza</h1>
+        <p class="subtitle">Choose from our delicious selection and customize with toppings</p>
+    </div>
+</div>
 
 @if (specials == null)
 {
-    <p>Loading pizza specials...</p>
+    <p style="text-align: center; padding: 40px; color: var(--muted);">⏳ Loading pizza specials...</p>
 }
 else
 {
+    <!-- Featured specials banner -->
+    @if (specials.Where(p => p.IsSpecial).Any())
+    {
+        <div class="featured-section">
+            <h3>⭐ Featured Specials</h3>
+            <div class="featured-grid">
+                @foreach (var special in specials.Where(p => p.IsSpecial).Take(3))
+                {
+                    <div class="featured-card">
+                        <div class="special-badge">SPECIAL</div>
+                        <div class="pizza-image-container">
+                            <img src="@special.ImageUrl" alt="@special.Name" class="pizza-image" />
+                        </div>
+                        <h4>@special.Name</h4>
+                        <p class="rating">⭐ @special.Rating.ToString("0.0") / 5.0</p>
+                        <p class="pizza-description">@special.Description</p>
+                        <div class="featured-price">£@special.Price.ToString("0.00")</div>
+                        <button class="btn btn-warning" @onclick="() => OpenCustomizer(special)">
+                            Customize & Add
+                        </button>
+                    </div>
+                }
+            </div>
+        </div>
+    }
+
+    <!-- Filter by category -->
+    <div class="filter-section">
+        <h3>Filter by Category</h3>
+        <div class="filter-buttons">
+            <button class="filter-btn @(selectedCategory == null ? "active" : "")"
+                @onclick="() => { selectedCategory = null; }">
+                All Pizzas
+            </button>
+            @foreach (var category in categories)
+            {
+                <button class="filter-btn @(selectedCategory == category ? "active" : "")"
+                    @onclick="() => { selectedCategory = category; }">
+                    @category
+                </button>
+            }
+        </div>
+    </div>
+
+    <!-- Main pizza grid -->
     <div class="pizza-grid">
-        @foreach (var s in specials)
+        @foreach (var s in GetFilteredPizzas())
         {
             <div class="pizza-card">
-                <div class="pizza-title">@s.Name</div>
-                <div class="pizza-price" style="margin-bottom: 16px;">
-                    Price: £@s.Price.ToString("0.00")
+                <div class="pizza-image-container">
+                    <img src="@s.ImageUrl" alt="@s.Name" class="pizza-image" />
                 </div>
-                <button class="btn btn-warning" @onclick="() => AddSpecialToOrder(s)">Add to order</button>
+                <div class="pizza-info">
+                    <h4 class="pizza-title">@s.Name</h4>
+                    <p class="pizza-category">@s.Category</p>
+                    <p class="rating">⭐ @s.Rating.ToString("0.0")</p>
+                    <p class="pizza-description">@s.Description</p>
+                    <div class="pizza-footer">
+                        <span class="pizza-price">£@s.Price.ToString("0.00")</span>
+                        <button class="btn btn-warning" @onclick="() => OpenCustomizer(s)">
+                            Add to Order
+                        </button>
+                    </div>
+                </div>
             </div>
         }
     </div>
 }
 
-<div style="margin-top: 24px; text-align: center;">
+<!-- Customizer Modal -->
+@if (selectedPizza != null)
+{
+    <div class="modal-overlay" @onclick="CloseCustomizer">
+        <div class="modal-content" @onclick:stopPropagation="true">
+            <button class="modal-close" @onclick="CloseCustomizer">✕</button>
+
+            <div class="modal-header">
+                <img src="@selectedPizza.ImageUrl" alt="@selectedPizza.Name" class="modal-pizza-image" />
+                <div>
+                    <h2>@selectedPizza.Name</h2>
+                    <p>@selectedPizza.Description</p>
+                </div>
+            </div>
+
+            <div class="modal-body">
+                <!-- Size Selection -->
+                <div class="customization-section">
+                    <h3>📏 Select Size</h3>
+                    <div class="size-grid">
+                        @foreach (var size in Enum.GetValues(typeof(PizzaSize)))
+                        {
+                            var pizzaSize = (PizzaSize)size;
+                            var sizePrice = GetSizePrice(pizzaSize);
+                            var isSelected = currentPizza.Size == pizzaSize;
+                            <button class="size-option @(isSelected ? "selected" : "")"
+                                @onclick="() => { currentPizza.Size = pizzaSize; }">
+                                <span class="size-name">@pizzaSize.ToString()</span>
+                                <span class="size-inches">@((int)pizzaSize)"</span>
+                                @if (sizePrice > 0)
+                                {
+                                    <span class="size-price">+£@sizePrice.ToString("0.00")</span>
+                                }
+                            </button>
+                        }
+                    </div>
+                </div>
+
+                <!-- Topping Selection -->
+                <div class="customization-section">
+                    <h3>🧅 Add Extra Toppings</h3>
+                    <p class="topping-subtitle">Select as many as you like (£0.50 - £1.25 each)</p>
+                    <div class="toppings-grid">
+                        @foreach (var topping in toppings ?? new List<Topping>())
+                        {
+                            var isSelected = selectedToppings.Any(t => t.Id == topping.Id);
+                            <label class="topping-checkbox @(isSelected ? "checked" : "")">
+                                <input type="checkbox"
+                                    @onchange="(ChangeEventArgs e) => ToggleTopping(topping, (bool)(e.Value ?? false))"
+                                    checked="@isSelected" />
+                                <span class="checkbox-label">@topping.Name</span>
+                                <span class="topping-price">£@topping.Price.ToString("0.00")</span>
+                            </label>
+                        }
+                    </div>
+                </div>
+            </div>
+
+            <!-- Price Summary -->
+            <div class="price-summary">
+                <div class="price-row">
+                    <span>Base Price:</span>
+                    <span>£@selectedPizza.Price.ToString("0.00")</span>
+                </div>
+                @if (GetSizePrice(currentPizza.Size) > 0)
+                {
+                    <div class="price-row">
+                        <span>Size Upgrade:</span>
+                        <span>£@GetSizePrice(currentPizza.Size).ToString("0.00")</span>
+                    </div>
+                }
+                @if (selectedToppings.Any())
+                {
+                    <div class="price-row">
+                        <span>Toppings (@selectedToppings.Count):</span>
+                        <span>£@selectedToppings.Sum(t => t.Price).ToString("0.00")</span>
+                    </div>
+                }
+                <div class="price-row total">
+                    <span>Total:</span>
+                    <span>£@CalculateTotal().ToString("0.00")</span>
+                </div>
+            </div>
+
+            <div class="modal-actions">
+                <button class="btn btn-warning" @onclick="AddToOrder">
+                    ✓ Add to Order
+                </button>
+                <button class="btn small-action" @onclick="CloseCustomizer">
+                    Cancel
+                </button>
+            </div>
+        </div>
+    </div>
+}
+
+<div style="margin-top: 40px; text-align: center; padding-bottom: 20px;">
     @if (OrderState.HasItems)
     {
         <button class="btn btn-warning" @onclick='() => NavManager.NavigateTo("/checkout")'
-            style="padding: 12px 24px; font-size: 1rem;">
-            🧾 Go to Checkout (@OrderState.Order?.Pizzas?.Count item@((OrderState.Order?.Pizzas?.Count ?? 0) != 1 ? "s" :
-                    ""))
+            style="padding: 14px 28px; font-size: 1.05rem;">
+            🧾 Review Order (@OrderState.Order?.Pizzas?.Count item@((OrderState.Order?.Pizzas?.Count ?? 0) != 1 ? "s" : ""))
         </button>
     }
 </div>
 
 @code {
     List<PizzaSpecial>? specials;
+    List<Topping>? toppings;
+    PizzaSpecial? selectedPizza;
+    Pizza currentPizza = new();
+    List<Topping> selectedToppings = new();
+    string? selectedCategory;
+    List<string> categories = new();
 
     protected override async Task OnInitializedAsync()
     {
         specials = await Http.GetFromJsonAsync<List<PizzaSpecial>>("api/pizzas");
+        toppings = await Http.GetFromJsonAsync<List<Topping>>("api/pizzas/toppings");
+
+        // Extract unique categories
+        if (specials != null)
+        {
+            categories = specials.Select(s => s.Category ?? "").Distinct().OrderBy(c => c).ToList();
+        }
     }
 
-    void AddSpecialToOrder(PizzaSpecial s)
+    List<PizzaSpecial> GetFilteredPizzas()
     {
-        var pizza = new Pizza { SpecialId = s.Id, Special = s, Size = 12 };
-        OrderState.AddPizza(pizza);
+        if (specials == null) return new List<PizzaSpecial>();
+
+        if (selectedCategory == null)
+            return specials;
+
+        return specials.Where(s => s.Category == selectedCategory).ToList();
+    }
+
+    void OpenCustomizer(PizzaSpecial special)
+    {
+        selectedPizza = special;
+        currentPizza = new Pizza
+        {
+            SpecialId = special.Id,
+            Special = special,
+            Size = PizzaSize.Medium
+        };
+        selectedToppings = new();
+    }
+
+    void CloseCustomizer()
+    {
+        selectedPizza = null;
+        selectedToppings = new();
+    }
+
+    void ToggleTopping(Topping topping, bool isSelected)
+    {
+        if (isSelected && !selectedToppings.Any(t => t.Id == topping.Id))
+        {
+            selectedToppings.Add(topping);
+        }
+        else if (!isSelected)
+        {
+            selectedToppings.RemoveAll(t => t.Id == topping.Id);
+        }
+        StateHasChanged();
+    }
+
+    decimal GetSizePrice(PizzaSize size)
+    {
+        return size switch
+        {
+            PizzaSize.Small => 0m,
+            PizzaSize.Medium => 1.50m,
+            PizzaSize.Large => 3.00m,
+            PizzaSize.XLarge => 4.50m,
+            _ => 0m
+        };
+    }
+
+    decimal CalculateTotal()
+    {
+        var basePrice = selectedPizza?.Price ?? 0m;
+        var sizePrice = GetSizePrice(currentPizza.Size);
+        var toppingsPrice = selectedToppings.Sum(t => t.Price);
+        return basePrice + sizePrice + toppingsPrice;
+    }
+
+    void AddToOrder()
+    {
+        if (selectedPizza == null) return;
+
+        currentPizza.Special = selectedPizza;
+
+        // Add toppings to pizza
+        foreach (var topping in selectedToppings)
+        {
+            currentPizza.Toppings.Add(new PizzaTopping { Topping = topping });
+        }
+
+        OrderState.AddPizza(currentPizza);
+        CloseCustomizer();
         StateHasChanged();
     }
 }

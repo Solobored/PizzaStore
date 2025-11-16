@@ -1,9 +1,10 @@
 @page "/checkout"
+@using PizzaStore.Models
 @inject PizzaStore.Services.OrderState OrderState
 @inject HttpClient Http
 @inject NavigationManager NavManager
 
-<h2>Checkout</h2>
+<h2>Review Your Order</h2>
 
 <a class="back-link" href="/pizzas">
     <span class="arrow">←</span>
@@ -19,37 +20,61 @@
 else
 {
     <div class="card checkout-card">
-        <h4>Review order</h4>
+        <h4>Your Pizzas</h4>
 
         @for (int i = 0; i < OrderState.Order.Pizzas.Count; i++)
         {
             var pizza = OrderState.Order.Pizzas[i];
-            <div class="list-group-item">
-                <div>
+            <div class="checkout-item">
+                <div class="item-details">
                     <div class="pizza-title">@pizza.Special?.Name</div>
-                    <div class="pizza-price">@(pizza.Size)"" • £@pizza.GetFormattedTotalPrice()</div>
+                    <div class="item-specs">
+                        <span class="spec">📏 @pizza.GetSizeDisplayName()</span>
+                        @if (pizza.Toppings.Any())
+                        {
+                            <span class="spec">🧅 @string.Join(", ", pizza.Toppings.Select(pt => pt.Topping?.Name))</span>
+                        }
+                    </div>
+                    <div class="item-price">£@pizza.GetFormattedTotalPrice()</div>
                 </div>
-                <div style="display:flex; gap:8px; align-items:center;">
-                    <button class="btn btn-danger" @onclick="() => RemovePizza(i)">Remove</button>
-                </div>
+                <button class="btn btn-danger" @onclick="() => RemovePizza(i)">Remove</button>
             </div>
         }
 
-        <p style="margin-top:16px; font-weight: 600; font-size: 1.1rem;">Total: £@OrderState.Order.GetTotalPriceString()</p>
+        <div class="order-summary">
+            <div class="summary-row">
+                <span>Items:</span>
+                <span>@OrderState.Order.Pizzas.Count</span>
+            </div>
+            <div class="summary-row total">
+                <span>Total:</span>
+                <span>£@OrderState.Order.GetTotalPriceString()</span>
+            </div>
+        </div>
 
         @if (!string.IsNullOrEmpty(errorMessage))
         {
-            <div style="background:#fee; border:1px solid #fcc; border-radius:8px; padding:12px; margin-bottom:12px; color:#c00;">
+            <div
+                style="background:#fee; border:1px solid #fcc; border-radius:8px; padding:12px; margin-bottom:12px; color:#c00;">
                 <strong>Error:</strong> @errorMessage
             </div>
         }
 
         <div style="display:flex; gap:8px; margin-top:16px; flex-wrap: wrap;">
             <button class="btn btn-warning" @onclick="PlaceOrder" disabled="@(isSubmitting || !OrderState.HasItems)">
-                @if (isSubmitting) { <span>⏳ Placing order...</span> } else { <span>✓ Place order</span> }
+                @if (isSubmitting)
+                {
+                    <span>⏳ Placing order...</span>
+                }
+                else
+                {
+
+                    <span>✓ Place order</span>
+                }
             </button>
 
-            <button class="btn small-action" @onclick='() => NavManager.NavigateTo("/pizzas")' disabled="@isSubmitting">Continue Shopping</button>
+            <button class="btn small-action" @onclick='() => NavManager.NavigateTo("/pizzas")'
+                disabled="@isSubmitting">Continue Shopping</button>
         </div>
     </div>
 }
@@ -85,7 +110,7 @@ else
             };
 
             var response = await Http.PostAsJsonAsync("api/orders", OrderState.Order);
-            
+
             if (!response.IsSuccessStatusCode)
             {
                 errorMessage = $"Failed to place order: {response.StatusCode}";
@@ -96,7 +121,7 @@ else
 
             var newOrderId = await response.Content.ReadFromJsonAsync<int>();
             OrderState.ResetOrder();
-            
+
             // Navigate to the order detail page
             NavManager.NavigateTo($"/myorders/{newOrderId}");
         }

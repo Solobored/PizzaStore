@@ -111,6 +111,7 @@ C:\Users\josva\OneDrive\Documentos\BYU Software Development\.Net Software Develo
 C:\Users\josva\OneDrive\Documentos\BYU Software Development\.Net Software Development\PizzaStore\obj\Debug\net8.0\PizzaStore.MvcApplicationPartsAssemblyInfo.cache
 C:\Users\josva\OneDrive\Documentos\BYU Software Development\.Net Software Development\PizzaStore\obj\Debug\net8.0\PizzaStore.RazorAssemblyInfo.cache
 C:\Users\josva\OneDrive\Documentos\BYU Software Development\.Net Software Development\PizzaStore\obj\Debug\net8.0\PizzaStore.RazorAssemblyInfo.cs
+C:\Users\josva\OneDrive\Documentos\BYU Software Development\.Net Software Development\PizzaStore\obj\Debug\net8.0\PizzaStore.sourcelink.json
 C:\Users\josva\OneDrive\Documentos\BYU Software Development\.Net Software Development\PizzaStore\obj\Debug\net8.0\rjimswa.dswa.cache.json
 C:\Users\josva\OneDrive\Documentos\BYU Software Development\.Net Software Development\PizzaStore\obj\Debug\net8.0\rjsmrazor.dswa.cache.json
 C:\Users\josva\OneDrive\Documentos\BYU Software Development\.Net Software Development\PizzaStore\obj\Debug\net8.0\rjsmcshtml.dswa.cache.json
@@ -125,4 +126,3 @@ C:\Users\josva\OneDrive\Documentos\BYU Software Development\.Net Software Develo
 C:\Users\josva\OneDrive\Documentos\BYU Software Development\.Net Software Development\PizzaStore\obj\Debug\net8.0\PizzaStore.pdb
 C:\Users\josva\OneDrive\Documentos\BYU Software Development\.Net Software Development\PizzaStore\obj\Debug\net8.0\PizzaStore.genruntimeconfig.cache
 C:\Users\josva\OneDrive\Documentos\BYU Software Development\.Net Software Development\PizzaStore\obj\Debug\net8.0\ref\PizzaStore.dll
-C:\Users\josva\OneDrive\Documentos\BYU Software Development\.Net Software Development\PizzaStore\obj\Debug\net8.0\PizzaStore.sourcelink.json

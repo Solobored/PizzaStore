@@ -1,0 +1,25 @@
+<svg viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg">
+  <!-- Pizza circle -->
+  <circle cx="100" cy="100" r="95" fill="#D4AF37" stroke="#8B7500" stroke-width="2"/>
+  <!-- Cheese base -->
+  <circle cx="100" cy="100" r="90" fill="#FDB914"/>
+  <!-- BBQ sauce -->
+  <circle cx="100" cy="100" r="85" fill="#8B4513" opacity="0.3"/>
+  <!-- Chicken pieces -->
+  <path d="M 65 75 Q 75 70, 85 75 Q 80 85, 70 85 Z" fill="#D2B48C" stroke="#8B4513" stroke-width="1"/>
+  <path d="M 115 70 Q 130 65, 140 75 Q 135 90, 115 85 Z" fill="#D2B48C" stroke="#8B4513" stroke-width="1"/>
+  <path d="M 80 110 Q 95 105, 105 115 Q 95 125, 80 120 Z" fill="#D2B48C" stroke="#8B4513" stroke-width="1"/>
+  <path d="M 120 120 Q 135 115, 145 125 Q 140 140, 120 140 Z" fill="#D2B48C" stroke="#8B4513" stroke-width="1"/>
+  <!-- Red onion slices -->
+  <circle cx="75" cy="105" r="7" fill="#FF6B9D" opacity="0.7"/>
+  <circle cx="125" cy="95" r="7" fill="#FF6B9D" opacity="0.7"/>
+  <circle cx="100" cy="140" r="6" fill="#FF6B9D" opacity="0.7"/>
+  <!-- Cilantro (green herbs) -->
+  <path d="M 55 95 Q 60 100, 55 105" stroke="#2ECC71" stroke-width="1.5" fill="none"/>
+  <path d="M 145 110 Q 150 115, 145 120" stroke="#2ECC71" stroke-width="1.5" fill="none"/>
+  <path d="M 85 55 Q 90 60, 85 65" stroke="#2ECC71" stroke-width="1.5" fill="none"/>
+  <!-- Cheese streaks -->
+  <path d="M 60 80 Q 100 90, 140 75" stroke="#FFF" stroke-width="2" fill="none" opacity="0.5"/>
+  <!-- Crust -->
+  <circle cx="100" cy="100" r="100" fill="none" stroke="#D2691E" stroke-width="8"/>
+</svg>

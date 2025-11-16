@@ -1,0 +1,28 @@
+<svg viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg">
+  <!-- Pizza circle -->
+  <circle cx="100" cy="100" r="95" fill="#D4AF37" stroke="#8B7500" stroke-width="2"/>
+  <!-- Cheese base -->
+  <circle cx="100" cy="100" r="90" fill="#FDB914"/>
+  <!-- Pesto green base -->
+  <circle cx="100" cy="100" r="85" fill="#2D5016" opacity="0.3"/>
+  <!-- Basil pesto coverage -->
+  <path d="M 50 100 Q 100 90, 150 100" stroke="#2ECC71" stroke-width="12" fill="none" opacity="0.6"/>
+  <path d="M 60 70 Q 100 60, 140 70" stroke="#2ECC71" stroke-width="12" fill="none" opacity="0.6"/>
+  <path d="M 65 130 Q 100 140, 135 130" stroke="#2ECC71" stroke-width="12" fill="none" opacity="0.6"/>
+  <!-- Sun-dried tomato chunks -->
+  <circle cx="70" cy="75" r="8" fill="#8B4513" opacity="0.9"/>
+  <circle cx="130" cy="85" r="8" fill="#8B4513" opacity="0.9"/>
+  <circle cx="85" cy="125" r="8" fill="#8B4513" opacity="0.9"/>
+  <circle cx="120" cy="130" r="8" fill="#8B4513" opacity="0.9"/>
+  <circle cx="100" cy="60" r="7" fill="#8B4513" opacity="0.9"/>
+  <!-- Pine nuts -->
+  <ellipse cx="55" cy="90" rx="5" ry="7" fill="#D4A574" transform="rotate(-30 55 90)"/>
+  <ellipse cx="145" cy="105" rx="5" ry="7" fill="#D4A574" transform="rotate(25 145 105)"/>
+  <ellipse cx="110" cy="50" rx="5" ry="7" fill="#D4A574" transform="rotate(-15 110 50)"/>
+  <ellipse cx="90" cy="140" rx="5" ry="7" fill="#D4A574" transform="rotate(10 90 140)"/>
+  <!-- Basil leaf accents -->
+  <ellipse cx="75" cy="100" rx="8" ry="12" fill="#2ECC71" opacity="0.5" transform="rotate(-25 75 100)"/>
+  <ellipse cx="125" cy="115" rx="8" ry="12" fill="#2ECC71" opacity="0.5" transform="rotate(35 125 115)"/>
+  <!-- Crust -->
+  <circle cx="100" cy="100" r="100" fill="none" stroke="#D2691E" stroke-width="8"/>
+</svg>
