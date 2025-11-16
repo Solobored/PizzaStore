@@ -114,10 +114,7 @@ C:\Users\josva\OneDrive\Documentos\BYU Software Development\.Net Software Develo
 C:\Users\josva\OneDrive\Documentos\BYU Software Development\.Net Software Development\PizzaStore\obj\Debug\net8.0\rjimswa.dswa.cache.json
 C:\Users\josva\OneDrive\Documentos\BYU Software Development\.Net Software Development\PizzaStore\obj\Debug\net8.0\rjsmrazor.dswa.cache.json
 C:\Users\josva\OneDrive\Documentos\BYU Software Development\.Net Software Development\PizzaStore\obj\Debug\net8.0\rjsmcshtml.dswa.cache.json
-C:\Users\josva\OneDrive\Documentos\BYU Software Development\.Net Software Development\PizzaStore\obj\Debug\net8.0\scopedcss\Components\Layout\MainLayout.razor.rz.scp.css
-C:\Users\josva\OneDrive\Documentos\BYU Software Development\.Net Software Development\PizzaStore\obj\Debug\net8.0\scopedcss\Components\Layout\NavMenu.razor.rz.scp.css
 C:\Users\josva\OneDrive\Documentos\BYU Software Development\.Net Software Development\PizzaStore\obj\Debug\net8.0\scopedcss\bundle\PizzaStore.styles.css
-C:\Users\josva\OneDrive\Documentos\BYU Software Development\.Net Software Development\PizzaStore\obj\Debug\net8.0\scopedcss\projectbundle\PizzaStore.bundle.scp.css
 C:\Users\josva\OneDrive\Documentos\BYU Software Development\.Net Software Development\PizzaStore\obj\Debug\net8.0\staticwebassets.build.json
 C:\Users\josva\OneDrive\Documentos\BYU Software Development\.Net Software Development\PizzaStore\obj\Debug\net8.0\staticwebassets.build.json.cache
 C:\Users\josva\OneDrive\Documentos\BYU Software Development\.Net Software Development\PizzaStore\obj\Debug\net8.0\staticwebassets.development.json
@@ -128,3 +125,4 @@ C:\Users\josva\OneDrive\Documentos\BYU Software Development\.Net Software Develo
 C:\Users\josva\OneDrive\Documentos\BYU Software Development\.Net Software Development\PizzaStore\obj\Debug\net8.0\PizzaStore.pdb
 C:\Users\josva\OneDrive\Documentos\BYU Software Development\.Net Software Development\PizzaStore\obj\Debug\net8.0\PizzaStore.genruntimeconfig.cache
 C:\Users\josva\OneDrive\Documentos\BYU Software Development\.Net Software Development\PizzaStore\obj\Debug\net8.0\ref\PizzaStore.dll
+C:\Users\josva\OneDrive\Documentos\BYU Software Development\.Net Software Development\PizzaStore\obj\Debug\net8.0\PizzaStore.sourcelink.json

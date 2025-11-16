@@ -13,7 +13,7 @@
 @if (OrderState.Order == null || !OrderState.Order.Pizzas.Any())
 {
     <div class="card">
-        <p>No items in order. <NavLink href="/pizzas">Order some pizza</NavLink></p>
+        <p>No items in order. <a href="/pizzas">Order some pizza</a></p>
     </div>
 }
 else
@@ -35,20 +35,28 @@ else
             </div>
         }
 
-        <p style="margin-top:12px"><strong>Total: £@OrderState.Order.GetTotalPriceString()</strong></p>
+        <p style="margin-top:16px; font-weight: 600; font-size: 1.1rem;">Total: £@OrderState.Order.GetTotalPriceString()</p>
 
-        <div style="display:flex; gap:8px; margin-top:8px;">
-            <button class="btn btn-warning" @onclick="PlaceOrder" disabled="@isSubmitting || !OrderState.HasItems">
-                @if (isSubmitting) { <span>Placing order...</span> } else { <span>Place order</span> }
+        @if (!string.IsNullOrEmpty(errorMessage))
+        {
+            <div style="background:#fee; border:1px solid #fcc; border-radius:8px; padding:12px; margin-bottom:12px; color:#c00;">
+                <strong>Error:</strong> @errorMessage
+            </div>
+        }
+
+        <div style="display:flex; gap:8px; margin-top:16px; flex-wrap: wrap;">
+            <button class="btn btn-warning" @onclick="PlaceOrder" disabled="@(isSubmitting || !OrderState.HasItems)">
+                @if (isSubmitting) { <span>⏳ Placing order...</span> } else { <span>✓ Place order</span> }
             </button>
 
-            <button class="btn small-action" @onclick='() => NavManager.NavigateTo("/")'>Continue Shopping</button>
+            <button class="btn small-action" @onclick='() => NavManager.NavigateTo("/pizzas")' disabled="@isSubmitting">Continue Shopping</button>
         </div>
     </div>
 }
 
 @code {
     bool isSubmitting = false;
+    string errorMessage = "";
 
     void RemovePizza(int index)
     {
@@ -58,13 +66,45 @@ else
 
     async Task PlaceOrder()
     {
-        if (OrderState.Order == null || !OrderState.Order.Pizzas.Any()) return;
+        if (OrderState.Order == null || !OrderState.Order.Pizzas.Any())
+        {
+            errorMessage = "No items in order";
+            return;
+        }
 
         isSubmitting = true;
-        var response = await Http.PostAsJsonAsync("api/orders", OrderState.Order);
-        response.EnsureSuccessStatusCode();
-        var newOrderId = await response.Content.ReadFromJsonAsync<int>();
-        OrderState.ResetOrder();
-        NavManager.NavigateTo($"/myorders/{newOrderId}");
+        errorMessage = "";
+
+        try
+        {
+            // Create a copy of the order data to send
+            var orderData = new
+            {
+                OrderState.Order.CreatedTime,
+                Pizzas = OrderState.Order.Pizzas
+            };
+
+            var response = await Http.PostAsJsonAsync("api/orders", OrderState.Order);
+            
+            if (!response.IsSuccessStatusCode)
+            {
+                errorMessage = $"Failed to place order: {response.StatusCode}";
+                isSubmitting = false;
+                StateHasChanged();
+                return;
+            }
+
+            var newOrderId = await response.Content.ReadFromJsonAsync<int>();
+            OrderState.ResetOrder();
+            
+            // Navigate to the order detail page
+            NavManager.NavigateTo($"/myorders/{newOrderId}");
+        }
+        catch (Exception ex)
+        {
+            errorMessage = $"Error placing order: {ex.Message}";
+            isSubmitting = false;
+            StateHasChanged();
+        }
     }
 }

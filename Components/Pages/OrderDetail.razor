@@ -12,8 +12,10 @@
 
 @if (invalidOrder)
 {
-    <h3>Order not found</h3>
-    <p>We're sorry but this order no longer exists.</p>
+    <div class="card">
+        <h3>Order not found</h3>
+        <p>We're sorry but this order no longer exists.</p>
+    </div>
 }
 else if (orderWithStatus == null)
 {
@@ -21,21 +23,31 @@ else if (orderWithStatus == null)
 }
 else
 {
-    <div class="card">
+    <div class="card checkout-card">
         <h4>Order placed @orderWithStatus.Order.CreatedTime.ToLongDateString()</h4>
-        <p>Status: <strong>@orderWithStatus.StatusText</strong></p>
+        <div style="margin-bottom: 16px; padding: 12px; background: rgba(233,78,27,0.08); border-radius: 8px; border-left: 4px solid var(--accent);">
+            <strong style="color: var(--accent);">Status: @orderWithStatus.StatusText</strong>
+        </div>
 
-        <div>
+        <div style="margin-bottom: 16px;">
             @foreach (var pizza in orderWithStatus.Order.Pizzas)
             {
-                <p><strong>@(pizza.Size)"" @pizza.Special?.Name (£@pizza.GetFormattedTotalPrice())</strong></p>
+                <div class="list-group-item" style="margin-bottom: 8px;">
+                    <div>
+                        <div class="pizza-title">@(pizza.Size)"" @pizza.Special?.Name</div>
+                        <div class="pizza-price">£@pizza.GetFormattedTotalPrice()</div>
+                    </div>
+                </div>
             }
         </div>
 
-        <div style="margin-top:12px; display:flex; gap:8px;">
-            <button class="btn btn-danger" @onclick="DeleteOrder">Delete order</button>
-            <button class="btn small-action" @onclick='() => NavManager.NavigateTo("/")'>Home</button>
+        <div style="margin-top: 16px; padding: 12px; background: #f5f5f5; border-radius: 8px; font-weight: 600; text-align: right;">
+            Total: £@orderWithStatus.Order.GetTotalPriceString()
+        </div>
 
+        <div style="margin-top:20px; display:flex; gap:8px; flex-wrap: wrap;">
+            <button class="btn btn-danger" @onclick="DeleteOrder">🗑️ Delete order</button>
+            <button class="btn small-action" @onclick='() => NavManager.NavigateTo("/pizzas")'>🍕 Order More</button>
         </div>
     </div>
 }
@@ -77,3 +89,4 @@ else
         }
     }
 }
+

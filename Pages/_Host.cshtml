@@ -4,15 +4,20 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Blazing Pizza Store</title>
-    <link href="css/app.css" rel="stylesheet" />
-    <link href="lib/bootstrap/dist/css/bootstrap.min.css" rel="stylesheet" />
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Blazing Pizza Store</title>
+
+  <!-- bootstrap first -->
+  <link href="/lib/bootstrap/dist/css/bootstrap.min.css" rel="stylesheet" />
+
+  <!-- then your app css so it can override bootstrap -->
+  <link href="/css/app.css" rel="stylesheet" />
+
+  <base href="/" />
 </head>
 <body>
-    <!-- root component: reference the App component under Components -->
-    <component type="typeof(Components.App)" render-mode="ServerPrerendered" />
-    <script src="_framework/blazor.server.js"></script>
+  <component type="typeof(Components.App)" render-mode="ServerPrerendered" />
+  <script src="_framework/blazor.server.js"></script>
 </body>
 </html>
