@@ -28,7 +28,8 @@ else
                     <div style="display: flex; gap: 20px; color: var(--muted);">
                         <div><strong>Items:</strong> @(item.Order.Pizzas?.Count() ?? 0)</div>
                         <div><strong>Total:</strong> £@item.Order.GetTotalPriceString()</div>
-                        <div><strong>Status:</strong> <span style="color: var(--accent); font-weight: 600;">@item.StatusText</span></div>
+                        <div><strong>Status:</strong> <span
+                                style="color: var(--accent); font-weight: 600;">@item.StatusText</span></div>
                     </div>
                 </div>
 

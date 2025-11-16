@@ -25,7 +25,8 @@ else
 {
     <div class="card checkout-card">
         <h4>Order placed @orderWithStatus.Order.CreatedTime.ToLongDateString()</h4>
-        <div style="margin-bottom: 16px; padding: 12px; background: rgba(233,78,27,0.08); border-radius: 8px; border-left: 4px solid var(--accent);">
+        <div
+            style="margin-bottom: 16px; padding: 12px; background: rgba(233,78,27,0.08); border-radius: 8px; border-left: 4px solid var(--accent);">
             <strong style="color: var(--accent);">Status: @orderWithStatus.StatusText</strong>
         </div>
 
@@ -41,7 +42,8 @@ else
             }
         </div>
 
-        <div style="margin-top: 16px; padding: 12px; background: #f5f5f5; border-radius: 8px; font-weight: 600; text-align: right;">
+        <div
+            style="margin-top: 16px; padding: 12px; background: #f5f5f5; border-radius: 8px; font-weight: 600; text-align: right;">
             Total: £@orderWithStatus.Order.GetTotalPriceString()
         </div>
 
@@ -89,4 +91,3 @@ else
         }
     }
 }
-

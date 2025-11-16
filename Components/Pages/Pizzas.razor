@@ -28,8 +28,10 @@ else
 <div style="margin-top: 24px; text-align: center;">
     @if (OrderState.HasItems)
     {
-        <button class="btn btn-warning" @onclick='() => NavManager.NavigateTo("/checkout")' style="padding: 12px 24px; font-size: 1rem;">
-            🧾 Go to Checkout (@OrderState.Order?.Pizzas?.Count item@((OrderState.Order?.Pizzas?.Count ?? 0) != 1 ? "s" : ""))
+        <button class="btn btn-warning" @onclick='() => NavManager.NavigateTo("/checkout")'
+            style="padding: 12px 24px; font-size: 1rem;">
+            🧾 Go to Checkout (@OrderState.Order?.Pizzas?.Count item@((OrderState.Order?.Pizzas?.Count ?? 0) != 1 ? "s" :
+                    ""))
         </button>
     }
 </div>
